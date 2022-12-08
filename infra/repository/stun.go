@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v4"
 )
 
@@ -28,10 +29,10 @@ var queries = map[string]string{
 	updateOfferICE:  "UPDATE stun SET offer_ice=$1 WHERE id=$2;",
 	updateAnswer:    "UPDATE stun SET answer=$1 WHERE id=$2;",
 	updateAnswerICE: "UPDATE stun SET answer_ice=$1 WHERE id=$2;",
-	selectOffer:     "SELECT FROM stun offer WHERE id=$1;",
-	selectOfferICE:  "SELECT FROM stun offer_ice WHERE id=$1;",
-	selectAnswer:    "SELECT FROM stun answer WHERE id=$1;",
-	selectAnswerICE: "SELECT FROM stun answer_ice WHERE id=$1;",
+	selectOffer:     "SELECT offer FROM stun WHERE id=$1;",
+	selectOfferICE:  "SELECT offer_ice FROM stun WHERE id=$1;",
+	selectAnswer:    "SELECT answer FROM stun WHERE id=$1;",
+	selectAnswerICE: "SELECT answer_ice FROM stun WHERE id=$1;",
 }
 
 func NewClient(ctx context.Context) (*Client, error) {
@@ -54,7 +55,7 @@ func NewClient(ctx context.Context) (*Client, error) {
 	return &Client{conn: conn}, nil
 }
 
-func (c *Client) InsertOffer(ctx context.Context, roomID, offer string) error {
+func (c *Client) InsertOffer(ctx context.Context, roomID uuid.UUID, offer []byte) error {
 	_, err := c.conn.Exec(ctx, insertOffer, roomID, offer)
 	if err != nil {
 		return err
@@ -62,31 +63,31 @@ func (c *Client) InsertOffer(ctx context.Context, roomID, offer string) error {
 	return nil
 }
 
-func (c *Client) UpdateOfferICE(ctx context.Context, roomID, ice string) error {
-	_, err := c.conn.Exec(ctx, updateOfferICE, roomID, ice)
+func (c *Client) UpdateOfferICE(ctx context.Context, roomID uuid.UUID, ice []byte) error {
+	_, err := c.conn.Exec(ctx, updateOfferICE, ice, roomID)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *Client) UpdateAnswer(ctx context.Context, roomID, answer string) error {
-	_, err := c.conn.Exec(ctx, updateAnswer, roomID, answer)
+func (c *Client) UpdateAnswer(ctx context.Context, roomID uuid.UUID, answer []byte) error {
+	_, err := c.conn.Exec(ctx, updateAnswer, answer, roomID)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *Client) UpdateAnswerICE(ctx context.Context, roomID, ice string) error {
-	_, err := c.conn.Exec(ctx, updateAnswerICE, roomID, ice)
+func (c *Client) UpdateAnswerICE(ctx context.Context, roomID uuid.UUID, ice []byte) error {
+	_, err := c.conn.Exec(ctx, updateAnswerICE, ice, roomID)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (c *Client) SelectOffer(ctx context.Context, roomID string) (*string, error) {
+func (c *Client) SelectOffer(ctx context.Context, roomID uuid.UUID) (*string, error) {
 	var offer string
 	err := c.conn.QueryRow(ctx, selectOffer, roomID).Scan(&offer)
 	if err != nil && err != pgx.ErrNoRows {
@@ -95,16 +96,16 @@ func (c *Client) SelectOffer(ctx context.Context, roomID string) (*string, error
 	return &offer, nil
 }
 
-func (c *Client) SelectOfferICE(ctx context.Context, roomID string) (*string, error) {
+func (c *Client) SelectOfferICE(ctx context.Context, roomID uuid.UUID) (*string, error) {
 	var ice string
-	err := c.conn.QueryRow(ctx, selectOffer, roomID).Scan(&ice)
+	err := c.conn.QueryRow(ctx, selectOfferICE, roomID).Scan(&ice)
 	if err != nil && err != pgx.ErrNoRows {
 		return nil, err
 	}
 	return &ice, nil
 }
 
-func (c *Client) SelectAnswer(ctx context.Context, roomID string) (*string, error) {
+func (c *Client) SelectAnswer(ctx context.Context, roomID uuid.UUID) (*string, error) {
 	var answer string
 	err := c.conn.QueryRow(ctx, selectAnswer, roomID).Scan(&answer)
 	if err != nil && err != pgx.ErrNoRows {
@@ -113,9 +114,9 @@ func (c *Client) SelectAnswer(ctx context.Context, roomID string) (*string, erro
 	return &answer, nil
 }
 
-func (c *Client) SelectAnswerICE(ctx context.Context, roomID string) (*string, error) {
+func (c *Client) SelectAnswerICE(ctx context.Context, roomID uuid.UUID) (*string, error) {
 	var ice string
-	err := c.conn.QueryRow(ctx, selectAnswer, roomID).Scan(&ice)
+	err := c.conn.QueryRow(ctx, selectAnswerICE, roomID).Scan(&ice)
 	if err != nil && err != pgx.ErrNoRows {
 		return nil, err
 	}
