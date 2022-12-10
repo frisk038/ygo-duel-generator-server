@@ -29,6 +29,8 @@ func NewStunHandler(b stunBusiness) *StunHandler {
 }
 
 func (h *StunHandler) GetOfferHandler(c *gin.Context) {
+	c.Header("Access-Control-Allow-Origin", "*")
+
 	of, err := h.business.GetOffer(c.Request.Context(), c.Param("roomid"))
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"err": err.Error()})
@@ -39,6 +41,8 @@ func (h *StunHandler) GetOfferHandler(c *gin.Context) {
 }
 
 func (h *StunHandler) GetOfferICEHandler(c *gin.Context) {
+	c.Header("Access-Control-Allow-Origin", "*")
+
 	of, err := h.business.GetOfferICE(c.Request.Context(), c.Param("roomid"))
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"err": err.Error()})
@@ -49,6 +53,8 @@ func (h *StunHandler) GetOfferICEHandler(c *gin.Context) {
 }
 
 func (h *StunHandler) GetAnswerHandler(c *gin.Context) {
+	c.Header("Access-Control-Allow-Origin", "*")
+
 	of, err := h.business.GetAnswer(c.Request.Context(), c.Param("roomid"))
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"err": err.Error()})
@@ -59,6 +65,8 @@ func (h *StunHandler) GetAnswerHandler(c *gin.Context) {
 }
 
 func (h *StunHandler) GetAnswerICEHandler(c *gin.Context) {
+	c.Header("Access-Control-Allow-Origin", "*")
+
 	of, err := h.business.GetAnswerICE(c.Request.Context(), c.Param("roomid"))
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"err": err.Error()})
@@ -69,6 +77,9 @@ func (h *StunHandler) GetAnswerICEHandler(c *gin.Context) {
 }
 
 func (h *StunHandler) PostOfferHandler(c *gin.Context) {
+	c.Header("Access-Control-Allow-Origin", "*")
+	c.Header("Access-Control-Allow-Methods", "POST")
+
 	body, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"err": err.Error()})
@@ -85,6 +96,9 @@ func (h *StunHandler) PostOfferHandler(c *gin.Context) {
 }
 
 func (h *StunHandler) PostOfferICEHandler(c *gin.Context) {
+	c.Header("Access-Control-Allow-Origin", "*")
+	c.Header("Access-Control-Allow-Methods", "POST")
+
 	body, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"err": err.Error()})
@@ -101,6 +115,9 @@ func (h *StunHandler) PostOfferICEHandler(c *gin.Context) {
 }
 
 func (h *StunHandler) PostAnswerHandler(c *gin.Context) {
+	c.Header("Access-Control-Allow-Origin", "*")
+	c.Header("Access-Control-Allow-Methods", "POST")
+
 	body, err := ioutil.ReadAll(c.Request.Body)
 	fmt.Println("body", string(body))
 	if err != nil {
@@ -118,6 +135,9 @@ func (h *StunHandler) PostAnswerHandler(c *gin.Context) {
 }
 
 func (h *StunHandler) PostAnswerICEHandler(c *gin.Context) {
+	c.Header("Access-Control-Allow-Origin", "*")
+	c.Header("Access-Control-Allow-Methods", "POST")
+
 	body, err := ioutil.ReadAll(c.Request.Body)
 	if err != nil {
 		c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"err": err.Error()})
